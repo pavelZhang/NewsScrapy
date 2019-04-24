@@ -8,7 +8,7 @@ import sys
 from scrapy.selector import Selector
 from scrapy.http import HtmlResponse, Request
 
-from myScrapy.ESUtils import ESUtils
+from myScrapy.elasticsearch_utils import ESUtils
 from myScrapy.items import huxiuItem
 
 INDEX_NAME = 'web'
@@ -30,7 +30,7 @@ class HuxiuSpdier(scrapy.spiders.Spider):
 
     esutils = ESUtils()
     es = esutils.connect()
-    r = redis.Redis(host='localhost', port=6379)
+    r = redis.Redis(host='10.45.10.201', port=6379)
 
     def start_requests(self):
         yield Request(url=self.start_urls[0], headers=self.headers, callback=self.parse)
@@ -41,10 +41,11 @@ class HuxiuSpdier(scrapy.spiders.Spider):
             '//a[contains(@href, "article")]/@href').extract()
         for url in all_urls:
             url = "https://www.huxiu.com/" + url
+            self.logger.info('url: %s', url)
             # if not self.r.sismember('urls', url):
             if not self.es.exists(INDEX_NAME, DOC_NAME, url):
-                #self.r.sadd('urls', url)
-                yield Request(url, callback=self.parse_article, headers=self.headers,)
+                # self.r.sadd('urls', url)
+                yield Request(url, callback=self.parse_article, headers=self.headers, )
 
     def parse_article(self, response):
         item = huxiuItem()  # 实例item（具体定义的item类）,将要保存的值放到事先声明的item属性中
@@ -52,11 +53,11 @@ class HuxiuSpdier(scrapy.spiders.Spider):
             '//title/text()').extract_first()
         if not title:
             title = response.xpath(
-            '//h1[@class="t-h1"]/text()').extract_first().strip()
+                '//h1[@class="t-h1"]/text()').extract_first().strip()
         if title:
             if title.endswith('-虎嗅网'):
                 title = title[:-4].strip()
-            item['title'] = title    
+            item['title'] = title
         item['author'] = response.xpath(
             '//span[@class="author-name"]/a/text()').extract_first().strip()
 

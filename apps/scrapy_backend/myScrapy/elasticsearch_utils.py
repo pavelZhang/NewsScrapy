@@ -1,21 +1,27 @@
 from elasticsearch import Elasticsearch
+from myScrapy.settings import elasticsearch_config
+
 
 class ESUtils(object):
 
     def __init__(self, host='localhost', port='9200', user='', password=''):
+        if elasticsearch_config:
+            host = elasticsearch_config.get('host', host)
+            port = elasticsearch_config.get('port', port)
+            user = elasticsearch_config.get('user', user)
+            password = elasticsearch_config.get('host', password)
         self.host = host
-        self.port= port 
-        self.user= user 
-        self.password = password 
-        
+        self.port = port
+        self.user = user
+        self.password = password
+        self.es = None
 
     def connect(self):
-        if self.host and self.port and self.user and self.password:
-            self.es = Elasticsearch(hosts=[{'host': self.host, 'port': self.port}], http_auth=(self.user, self.password))
-            
-        else:
-            self.es = Elasticsearch()
+        self.es = Elasticsearch(hosts=[{'host': self.host, 'port': self.port}],
+                                http_auth=(self.user, self.password))
         return self.es
+
+
 """
     def count(self, indexname):
         '''
