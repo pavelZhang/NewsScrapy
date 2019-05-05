@@ -96,6 +96,19 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://10.45.10.201:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -178,10 +191,19 @@ LOGGING = {
             'backupCount': 5,
             'encoding': 'utf-8'
         },
+        'backend-file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(BASE_DIR, 'log', 'backend.log'),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'encoding': 'utf-8'
+        },
     },
     'loggers': {
         'django.db.backends': {
-            'handlers': [],
+            'handlers': ['backend-file'],
             'propagate': True,
             'level': 'DEBUG',
         },
