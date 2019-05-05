@@ -26,8 +26,8 @@ class Artical(AbstractModel):
     description = models.CharField(max_length=64)
     content = models.TextField()
     url = models.CharField(max_length=64)
-    share = models.IntegerField(max_length=64, default=0)
-    comment = models.IntegerField(max_length=64, default=0)
+    share = models.IntegerField(default=0)
+    comment = models.IntegerField(default=0)
     timestamp = models.CharField(max_length=64)
 
     class Meta:

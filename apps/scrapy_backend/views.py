@@ -16,29 +16,7 @@ from NewsScrapy.utils import pagenator_data
 class ScapyViewSet(BaseView):
 
     def article_list(self, request, *args, **kwargs):
-
-        res = {
-            'return': 'success',
-            'data': {
-                'all': 0,
-                'page': 0,
-                'detail': [],
-            }
-        }
-
-        pagesize = request.GET.get('pagesize', 10)
-        page = request.GET.get('page', 1)
-        sortField = request.GET.get('sortField')
-        sortOrder = request.GET.get('sortOrder')
-        if not (sortField and sortOrder):
-            article_qs = _db.Artical.objects.all()
-        else:
-            if sortOrder == 'ascend':
-                article_qs = _db.Artical.objects.all().order_by(sortField)
-            else:
-                article_qs = _db.Artical.objects.all().order_by('-{}'.format(sortField))
-        data = list(article_qs.values())
-        res['data'] = pagenator_data(data, page, pagesize)
+        res = pagenator_data(_db.Artical, request, *args, **kwargs)
         return res
 
     def article_detail(self, request, *args, **kwargs):
