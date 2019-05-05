@@ -40,11 +40,11 @@ class HuxiuSpdier(scrapy.spiders.Spider):
         all_urls = response.xpath(
             '//a[contains(@href, "article")]/@href').extract()
         for url in all_urls:
-            url = "https://www.huxiu.com/" + url
+            url = "https://www.huxiu.com" + url
             self.logger.info('url: %s', url)
-            # if not self.r.sismember('urls', url):
-            if not self.es.exists(INDEX_NAME, DOC_NAME, url):
-                # self.r.sadd('urls', url)
+            if not self.r.sismember('urls', url):
+            # if not self.es.exists(INDEX_NAME, DOC_NAME, url):
+                self.r.sadd('urls', url)
                 yield Request(url, callback=self.parse_article, headers=self.headers, )
 
     def parse_article(self, response):
