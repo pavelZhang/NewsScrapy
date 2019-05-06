@@ -33,16 +33,16 @@ class CommonMiddle(MiddlewareMixin):
         1. 过滤掉不需要验证的 url
         2. 判断用户是否登录，未登录返回
         """
-        ret = {'message': 'please login', 'return': 'error'}
-        url_path = request.path
-        exclued = False
-        for each in exclued_path:
-            if re.search(each, url_path):
-                exclued = True
+        if not request.user.is_authenticated:
+            ret = {'message': 'please login', 'return': 'error'}
+            url_path = request.path
+            exclued = False
+            for each in exclued_path:
+                if re.search(each, url_path):
+                    exclued = True
+                    break
 
-        if not exclued:
-            if not request.user.is_authenticated:
-                # pass
+            if not exclued:
                 return ret
 
     def process_response(self, request, response):

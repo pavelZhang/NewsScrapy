@@ -5,8 +5,9 @@
 @time: 2019/4/1 21:29
 @description:
 """
+import json
 import logging
-from datetime import datetime
+import datetime
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -60,6 +61,19 @@ class AbstractModel(models.Model):
             pre_value = field.value_from_object(self)
             # logger.info('pre_value: ' + pre_value)
         return ret
+
+    def json(self):
+        data = {}
+        for field in self._meta.fields:
+            value = field.value_from_object(self)
+            if type(value) is datetime.date or type(value) is datetime.datetime:
+                value = datetime.datetime.strftime(value, '%Y-%m-%d %H:%M:%S')
+
+            data[field.name] = value
+        return data
+
+    def json_str(self):
+        return json.dumps(self.json())
 
     class Meta:
         abstract = True

@@ -96,18 +96,33 @@ DATABASES = {
     }
 }
 
+REDIS = {
+    'host': '10.45.10.201',
+    'port': 6379,
+}
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://10.45.10.201:6379/1",
+        "LOCATION": "redis://{host}:{port}/1".format(host=REDIS['host'], port=REDIS['port']),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'PASSWORD': '',
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'CONNECTION_POOL_CLASS_KWARGS': {
+                'max_connections': 100,
+                'timeout': 20,
+            }
         }
     }
 }
 
+SESSION_COOKIE_AGE = 3600 * 24
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
+
+AUTHENTICATION_BACKENDS = ('NewsScrapy.backends.ModelBackend', 'guardian.backends.ObjectPermissionBackend')
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
