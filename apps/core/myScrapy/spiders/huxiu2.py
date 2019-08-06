@@ -9,23 +9,31 @@
 import redis
 import scrapy
 import re
-import os
-import urllib
-import sys
 from scrapy.selector import Selector
 from scrapy.http import HtmlResponse, Request
 
-from myScrapy.elasticsearch_utils import ESUtils
 from myScrapy.items import huxiuItem
 
 INDEX_NAME = 'web'
 DOC_NAME = 'huxiu'
 
+import requests
+
+
+def get_urls():
+    res = requests.get('https://www-api.huxiu.com/v1/article/list?page=1&pagesize=21')
+
+    if res.status_code == 200:
+        ret = res.json()
+        dataList = ret['data']['dataList']
+        urls = (f"https://www.huxiu.com/article/{item['aid']}.html" for item in dataList)
+        return urls
+
 
 class HuxiuSpdier(scrapy.spiders.Spider):
-    name = "huxiu"  # 定义爬虫名，要和settings中的BOT_NAME属性对应的值一致
-    allowed_domains = ["huxiu.com"]  # 搜索的域名范围，也就是爬虫的约束区域，规定爬虫只爬取这个域名下的网页
-    start_urls = ["https://www.huxiu.com/"]  # 开始爬取的地址
+    name = "huxiu2"
+    allowed_domains = ["huxiu.com"]
+    start_urls = get_urls()
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Encoding': 'gzip, deflate, sdch',
@@ -35,34 +43,14 @@ class HuxiuSpdier(scrapy.spiders.Spider):
         'Cookie': ''
     }
 
-    esutils = ESUtils()
-    es = esutils.connect()
     r = redis.Redis(host='10.45.10.201', port=6379)
 
     def start_requests(self):
-        yield Request(url=self.start_urls[0], headers=self.headers, callback=self.parse)
+        for url in self.start_urls:
+            if not self.r.sismember('urls', url):
+                yield Request(url=url, headers=self.headers, callback=self.parse)
 
-    # 该函数名不能改变，因为Scrapy源码中默认callback函数的函数名就是parse
     def parse(self, response):
-        """
-        1. 解析首页内容，获取文章url
-        2. 判断 url 是否为合法的文章链接
-        3. 判断 url 是否已处理
-        :param response:
-        :return:
-        """
-        all_urls = response.xpath(
-            '//a[contains(@href, "article")]/@href').extract()
-        for url in all_urls:
-            url = "https://www.huxiu.com" + url
-            self.logger.info('url: %s', url)
-            if re.search(r'https://www.huxiu.com/article/.+\.html', url):
-                if not self.r.sismember('urls', url):
-                    # if not self.es.exists(INDEX_NAME, DOC_NAME, url):
-                    self.r.sadd('urls', url)
-                    yield Request(url, callback=self.parse_article, headers=self.headers, )
-
-    def parse_article(self, response):
         item = huxiuItem()  # 实例item（具体定义的item类）,将要保存的值放到事先声明的item属性中
 
         item['url'] = response.url
@@ -95,6 +83,11 @@ class HuxiuSpdier(scrapy.spiders.Spider):
             'span[@class="article-time pull-left"]',
             'span[@class="article-time"]',
             'span[@class="article__time"]',
+        ]
+
+        keywords_xpath = [
+            '//meta[@name="keywords"]/@content',
+            '//meta[@name="keyWords"]/@content',
         ]
 
         for pattern in title_pattern:
@@ -138,8 +131,11 @@ class HuxiuSpdier(scrapy.spiders.Spider):
         item['description'] = response.xpath(
             '//meta[@name="description"]/@content').extract_first()
 
-        item['keywords'] = response.xpath(
-            '//meta[@name="keywords"]/@content').extract_first()
+        for xpath in keywords_xpath:
+            keywords = response.xpath(xpath).extract_first()
+            if keywords:
+                item['keywords'] = keywords.strip()
+                break
 
         for pattern in content_pattern:
             paragraphs = response.xpath(
@@ -148,6 +144,4 @@ class HuxiuSpdier(scrapy.spiders.Spider):
                 item['content'] = '\r\n'.join(paragraphs)
                 break
 
-        yield item  # 返回item,这时会自定解析item
-
-        # urllib.urlretrieve(realUrl, path)  # 接收文件路径和需要保存的路径，会自动去文件路径下载并保存到我们指定的本地路径
+        yield item

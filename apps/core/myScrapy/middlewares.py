@@ -4,9 +4,12 @@
 #
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import time
 import random
-
+from scrapy.http import HtmlResponse
+from selenium.common.exceptions import TimeoutException
 from scrapy import signals
+
 
 class MyscrapySpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -55,6 +58,7 @@ class MyscrapySpiderMiddleware(object):
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
 
+
 USER_AGENT_LIST = [
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
     "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",
@@ -76,8 +80,23 @@ USER_AGENT_LIST = [
     "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
 ]
 
+
 class RandomUserAgentMiddleware(object):
     def process_request(self, request, spider):
-        ua  = random.choice(USER_AGENT_LIST)
+        ua = random.choice(USER_AGENT_LIST)
         if ua:
             request.headers.setdefault('User-Agent', ua)
+
+
+class SeleniumMiddleware(object):
+    def process_request(self, request, spider):
+        if spider.name == 'jingdong':
+            try:
+                spider.browser.get(request.url)
+                spider.browser.execute_script('window.scrollTo(0, document.body.scrollHeight)')
+            except TimeoutException as e:
+                print('超时')
+                spider.browser.execute_script('window.stop()')
+            time.sleep(2)
+            return HtmlResponse(url=spider.browser.current_url, body=spider.browser.page_source,
+                                encoding="utf-8", request=request)
