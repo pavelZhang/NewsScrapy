@@ -59,7 +59,7 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
 # EXTENSIONS = {
-#    'scrapy_backend.extensions.telnet.TelnetConsole': None,
+#    'news_spider.extensions.telnet.TelnetConsole': None,
 # }
 
 # Configure item pipelines
@@ -96,4 +96,4 @@ elasticsearch_config = {
 # HTTPCACHE_EXPIRATION_SECS = 0
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
-# HTTPCACHE_STORAGE = 'scrapy_backend.extensions.httpcache.FilesystemCacheStorage'
+# HTTPCACHE_STORAGE = 'news_spider.extensions.httpcache.FilesystemCacheStorage'

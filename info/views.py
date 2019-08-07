@@ -17,9 +17,9 @@ from django.forms.models import model_to_dict
 from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate, login, logout
 
-from NewsScrapy import models as _db
+from info import models as _db
 from django.core.exceptions import ValidationError
-from NewsScrapy.utils import pagenator_data
+from info.utils import pagenator_data
 
 # from ire_web.settings import DIMENSION_DOCUMENTS_HOME
 
@@ -359,99 +359,6 @@ class GroupViewSet(BaseView):
             group.delete()
         except Exception as e:
             res['msg'] = _("用户删除失败")
-        return res
-
-
-class HostViewSet(BaseView):
-
-    def host_list(self, request, *args, **kwargs):
-        """
-        用户列表
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        res = {
-            'return': 'success',
-            'data': {
-                'all': 0,
-                'page': 0,
-                'detail': [],
-            }
-        }
-        page = request.GET.get('page', 1)
-        pagesize = request.GET.get('pagesize', 10)
-        hosts = _db.Host.objects.all().values()
-        data = pagenator_data(hosts, page, pagesize)
-        res['data'] = data
-        return res
-
-    def host_add(self, request, *args, **kwargs):
-        """
-        新建用户
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        res = {
-            'return': 'success',
-            'data': '',
-            'msg': '主机新增成功',
-        }
-        param = request.POST.dict()
-        try:
-            host = _db.Host(**param)
-            host.save()
-            res['data'] = host.id
-        except ValidationError as e:
-            res['data'] = e.error_list
-            res['msg'] = "主机新增失败"
-        return res
-
-    def host_update(self, request, *args, **kwargs):
-        """
-        更新用户
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        res = {
-            'return': 'success',
-            'msg': '主机修改成功',
-        }
-
-        pk = kwargs.get('pk')
-        param = request.POST.dict()
-        try:
-            row = _db.Host.objects.get(id=pk)
-            row.update(**param)
-        except ValidationError as e:
-            res['data'] = e.error_list
-            res['msg'] = "主机修改失败"
-        return res
-
-    def host_delete(self, request, *args, **kwargs):
-        """
-        删除用户
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        res = {
-            'return': 'success',
-            'msg': '主机删除成功',
-        }
-
-        pk = kwargs.get('pk')
-        try:
-            row = _db.Host.objects.get(id=pk)
-            row.delete()
-        except Exception as e:
-            res['msg'] = "主机删除失败"
         return res
 
 

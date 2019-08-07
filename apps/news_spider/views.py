@@ -8,9 +8,9 @@
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from NewsScrapy.views import BaseView
-from apps.scrapy_backend import models as _db
-from NewsScrapy.utils import pagenator_data
+from info.views import BaseView
+from apps.news_spider import models as _db
+from info.utils import pagenator_data
 
 
 class ScapyViewSet(BaseView):

@@ -83,38 +83,3 @@ class User(AbstractUser, AbstractModel):
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
-
-
-class Project(AbstractModel):
-    """
-    项目表
-    """
-    name = models.CharField(max_length=64, unique=True)  # 项目名称
-    desc = models.CharField(max_length=64, blank=True)  # 项目简介
-    create_date = models.DateTimeField()  # 创建日期
-
-    def save(self, *args, **kwargs):
-        """
-        新增时，时间格式化
-        """
-        if not self.id:
-            self.create_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        super(Project, self).save(*args, **kwargs)
-
-    class Meta:
-        ordering = ['name']
-
-
-class Host(AbstractModel):
-    """
-    主机表
-    """
-    hostname = models.CharField(max_length=64, null=False)  # 主机名
-    sn = models.CharField(max_length=64, unique=True)  # sn
-    manufacturer = models.CharField(max_length=64, blank=True, null=True)  # 厂商
-    host_model = models.CharField(max_length=64, blank=True)  # 主机型号
-    ipmi_user = models.CharField(max_length=64, blank=True)  # ipmi用户
-    ipmi_password = models.CharField(max_length=64, blank=True)  # ipmi密码
-    ipaddr = models.CharField(max_length=64, validators=[validate_ipv4_address], null=False)
-    user = models.CharField(max_length=64, null=False)
-    password = models.CharField(max_length=64, null=False)

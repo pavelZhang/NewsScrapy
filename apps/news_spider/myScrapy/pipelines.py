@@ -10,9 +10,9 @@ import django
 from myScrapy.elasticsearch_utils import ESUtils
 from myScrapy.spiders.huxiu import INDEX_NAME, DOC_NAME
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'NewsScrapy.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'info.settings'
 django.setup()
-from apps.scrapy_backend import models as _db
+from apps.news_spider import models as _db
 
 
 class MyscrapyPipeline(object):

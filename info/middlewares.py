@@ -14,7 +14,7 @@ import traceback
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
 
-from NewsScrapy.settings import EXCLUDE_URL
+from info.settings import EXCLUDE_URL
 
 logger = logging.getLogger('django.middleware')
 

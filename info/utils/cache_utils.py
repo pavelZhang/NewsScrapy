@@ -7,11 +7,11 @@
 """
 import json
 
-from NewsScrapy.models import User
+from info.models import User
 from django.core.cache import cache
 from django_redis import get_redis_connection
 
-from NewsScrapy import settings
+from info import settings
 
 
 class SystemCache(object):

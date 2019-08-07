@@ -13,7 +13,7 @@ from django.contrib.auth.models import User as Auth_User
 
 logger = logging.getLogger('django.view')
 
-from NewsScrapy.models import AbstractModel
+from info.models import AbstractModel
 
 
 class Artical(AbstractModel):

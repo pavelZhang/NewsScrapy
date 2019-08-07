@@ -7,10 +7,10 @@
 """
 import json
 from django.core.cache import cache
-from NewsScrapy.models import User
+from info.models import User
 from django.contrib.auth.backends import ModelBackend
 
-from NewsScrapy.utils.cache_utils import SystemCache
+from info.utils.cache_utils import SystemCache
 
 
 class ModelBackend(ModelBackend):

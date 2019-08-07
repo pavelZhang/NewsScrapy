@@ -9,7 +9,7 @@ from scrapy import cmdline
 
 
 def main():
-    cmdline.execute('scrapy_backend crawl huxiu'.split())
+    cmdline.execute('news_spider crawl huxiu'.split())
 
 
 if __name__ == "__main__":
