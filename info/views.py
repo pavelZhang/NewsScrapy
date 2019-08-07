@@ -41,16 +41,11 @@ class BaseView(View):
     logger = logger
 
     def dispatch(self, request, *args, **kwargs):
-        check, permission = self.permission_check(request, *args, **kwargs)
+        """
+        check, ret = self.permission_check(request, *args, **kwargs)
         if not check:
-            ret = {
-                'status_code': 403,
-                'response': {
-                    'return': 'error',
-                    'message': '{} is forbidden'.format(permission)
-                }
-            }
             return ret
+        """
 
         handler = None
         request_method = request.method.lower()
@@ -92,7 +87,14 @@ class BaseView(View):
                         check = request.user.has_perm(permission)
                     if not check:
                         logger.info('permission {} on {} forbidden, '.format(permission, obj.id))
-                        return False, permission
+                        ret = {
+                            'status_code': 403,
+                            'response': {
+                                'return': 'error',
+                                'message': '{} is forbidden'.format(permission)
+                            }
+                        }
+                        return False, ret
         return True, None
 
 

@@ -43,7 +43,8 @@ class CommonMiddle(MiddlewareMixin):
                     break
 
             if not exclued:
-                return ret
+                pass
+                #return ret
 
     def process_response(self, request, response):
         """
