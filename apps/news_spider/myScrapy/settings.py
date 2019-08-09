@@ -38,16 +38,19 @@ ROBOTSTXT_OBEY = False
 # TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-# DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-# }
+DEFAULT_REQUEST_HEADERS = {
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en',
+  #user-agent新添加
+  'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+}
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
     # 'myScrapy.middlewares.MyscrapySpiderMiddleware': 543,
     'myScrapy.middlewares.RandomUserAgentMiddleware': 543,
+    'myScrapy.middlewares.SeleniumMiddleware': 543,
 }
 
 # Enable or disable downloader middlewares
@@ -59,7 +62,7 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
 # EXTENSIONS = {
-#    'news_spider.extensions.telnet.TelnetConsole': None,
+#    'core.extensions.telnet.TelnetConsole': None,
 # }
 
 # Configure item pipelines
@@ -96,4 +99,4 @@ elasticsearch_config = {
 # HTTPCACHE_EXPIRATION_SECS = 0
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
-# HTTPCACHE_STORAGE = 'news_spider.extensions.httpcache.FilesystemCacheStorage'
+# HTTPCACHE_STORAGE = 'core.extensions.httpcache.FilesystemCacheStorage'

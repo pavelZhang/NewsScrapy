@@ -5,6 +5,15 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import os
+import sys
+import traceback
+import configparser
+
+parser = configparser.ConfigParser()
+CONF = r'D:\WorkSpace\my-github\info\newsinfo.conf'
+parser.read(CONF)
+HOME = parser.get('newsinfo', 'home')
+sys.path.append(HOME)
 import django
 
 from myScrapy.elasticsearch_utils import ESUtils
@@ -32,5 +41,10 @@ class PGPipeline(object):
         pass
 
     def process_item(self, item, spider):
-        _db.Artical.objects.create(**dict(item))
+        try:
+            _db.Artical.objects.create(**dict(item))
+            spider.r.sadd('urls', item['url'])
+        except Exception as e:
+            spider.r.srem('urls', item['url'])
+            print(traceback.format_exc())
         return item
