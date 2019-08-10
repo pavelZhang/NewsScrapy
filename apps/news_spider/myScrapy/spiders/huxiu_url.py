@@ -4,7 +4,8 @@
 @contact: zhang.pengfei5@iwhalecloud.com
 @time: 2019/8/4 22:28
 @description:
-    测试CrawlSpider用法
+    测试CrawlSpider用法,自动匹配url
+    目前只打印url
 """
 
 import scrapy
@@ -13,7 +14,7 @@ from scrapy.linkextractors import LinkExtractor
 
 
 class MySpider(CrawlSpider):
-    name = 'huxiu1'
+    name = 'huxiu_url'
     allowed_domains = []
     start_urls = ['https://www.huxiu.com/article']
 

@@ -4,7 +4,8 @@
 @contact: zhang.pengfei5@iwhalecloud.com
 @time: 2019/8/4 22:28
 @description:
-    爬去虎嗅文章
+    爬取虎嗅文章
+    通过调接口的方式获取 获取虎嗅文章 url
 """
 import redis
 import scrapy
@@ -31,7 +32,7 @@ def get_urls():
 
 
 class HuxiuSpdier(scrapy.spiders.Spider):
-    name = "huxiu2"
+    name = "huxiu_api"
     allowed_domains = ["huxiu.com"]
     start_urls = get_urls()
     headers = {
