@@ -9,7 +9,7 @@ from scrapy.selector import Selector
 from scrapy.http import HtmlResponse, Request
 
 from myScrapy.elasticsearch_utils import ESUtils
-from myScrapy.items import huxiuItem
+from myScrapy.items import Article
 
 INDEX_NAME = 'web'
 DOC_NAME = 'huxiu'
@@ -48,7 +48,7 @@ class HuxiuSpdier(scrapy.spiders.Spider):
                 yield Request(url, callback=self.parse_article, headers=self.headers, )
 
     def parse_article(self, response):
-        item = huxiuItem()  # 实例item（具体定义的item类）,将要保存的值放到事先声明的item属性中
+        item = Article()  # 实例item（具体定义的item类）,将要保存的值放到事先声明的item属性中
         title = response.xpath(
             '//title/text()').extract_first()
         if not title:

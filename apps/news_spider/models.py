@@ -55,7 +55,7 @@ class Artical(AbstractModel):
     文章表
     """
     title = models.CharField(max_length=256, null=True, blank=True, verbose_name='标题')
-    author = models.ForeignKey(SiteUser, verbose_name='站点用户', on_delete=models.CASCADE)
+    author = models.ForeignKey(SiteUser, null=True, blank=True, verbose_name='站点用户', on_delete=models.CASCADE)
     keywords = models.CharField(max_length=256, null=True, blank=True, verbose_name='所属站点')
     content = models.TextField(verbose_name='内容')
     url = models.CharField(max_length=128, verbose_name='url')

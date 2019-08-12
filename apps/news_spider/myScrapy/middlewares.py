@@ -90,7 +90,7 @@ class RandomUserAgentMiddleware(object):
 
 class SeleniumMiddleware(object):
     def process_request(self, request, spider):
-        if spider.name in ('jingdong', 'huxiu1'):
+        if spider.name in ('jingdong', 'huxiu1', 'guancha'):
             try:
                 spider.browser.get(request.url)
                 spider.browser.execute_script('window.scrollTo(0, document.body.scrollHeight)')

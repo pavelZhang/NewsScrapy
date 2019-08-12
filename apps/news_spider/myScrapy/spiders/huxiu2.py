@@ -7,22 +7,18 @@
     爬取虎嗅文章
     通过调接口的方式获取 获取虎嗅文章 url
 """
-import redis
-import scrapy
 import re
+import redis
+import requests
+import scrapy
 from scrapy.selector import Selector
 from scrapy.http import HtmlResponse, Request
 
-from myScrapy.items import huxiuItem
-
-INDEX_NAME = 'web'
-DOC_NAME = 'huxiu'
-
-import requests
+from myScrapy.items import SiteUser, Article, Comment
 
 
 def get_urls():
-    res = requests.get('https://www-api.huxiu.com/v1/article/list?page=1&pagesize=21')
+    res = requests.get('https://www-api.huxiu.com/v1/article/list?page=1&pagesize=3')
 
     if res.status_code == 200:
         ret = res.json()
@@ -52,8 +48,87 @@ class HuxiuSpdier(scrapy.spiders.Spider):
                 yield Request(url=url, headers=self.headers, callback=self.parse)
 
     def parse(self, response):
-        item = huxiuItem()  # 实例item（具体定义的item类）,将要保存的值放到事先声明的item属性中
+        """
+        解析文章
+        :param response:
+        :return:
+        """
+        # article = self.get_article(response)
+        members = response.xpath('//a[contains(@href, "member")]/@href').getall()
+        # author = response.xpath('//span[@class="author-name"]/a[contains(@href, "member")]/@href').extract_first()
+        for member in members:
+            yield Request(url=member, callback=self.parse_user, cb_kwargs={'freponse': response})
 
+    def parse_user(self, response):
+        """
+        解析用户信息
+
+        user_info =
+['\n                        ',
+ '\n                        公司：广州有好戏网络科技有限公司                    ',
+ '\n                        ',
+ '\n                        邮箱：保密                    ',
+ '\n                        ',
+ '\n                        微博：',
+ '                    ',
+ '\n                        ',
+ '\n                        微信：youhaoxifilm                    ',
+ '\n                            ',
+ '\n                            微信公众号：youhaoxifilm                        ']
+
+
+        more_user_info =
+['\n                            ',
+ '\n                            真实姓名：毒眸                        ',
+ '\n                            ',
+ '\n                            手机：保密                        ',
+ '\n                            ',
+ '\n                            性别：保密                        ',
+ '\n                            ',
+ '\n                            所在地址：保密                        ',
+ '\n                    ',
+ '\n                    注册时间：2018-08-01                ']
+        :param response:
+        :return:
+        """
+        nickname = response.xpath('//div[@class="user-name"]/text()').extract_first().strip()
+        item = SiteUser(site='huxiu', nickname=nickname, url=response.url)
+
+        user_fields = {
+            '公司': 'company',
+            '邮箱': 'email',
+            '微博': 'weibo',
+            '微信': 'weichat',
+            '真实姓名': 'username',
+            '手机': 'telephone',
+            '性别': 'gender',
+            '所在地址': 'address',
+            '注册时间': 'regtime',
+            '积分': 'points',
+        }
+
+        user_info = response.xpath('//div[@class="user-info"]/text()').extract()
+        more_user_info = response.xpath('//div[@class="more-user-info"]/text()').extract()
+        points = response.xpath('//div[contains(@class, "more-user-info-box")]/span/text()').extract()
+        user_info.extend(more_user_info)
+        user_info.extend(points)
+        for line in user_info:
+            if '：' not in line:
+                continue
+
+            key, value = line.strip().split('：', 1)
+            if key in user_fields:
+                item[user_fields[key]] = value
+
+        yield item
+
+    def get_article(self, response):
+        """
+        解析获取文章内容
+        :param response:
+        :return:
+        """
+        item = Article()
         item['url'] = response.url
 
         title_pattern = [
@@ -144,5 +219,9 @@ class HuxiuSpdier(scrapy.spiders.Spider):
             if paragraphs:
                 item['content'] = '\r\n'.join(paragraphs)
                 break
+
+        comment, like = response.xpath('//div[contains(@class, "icon-hasNum")]/i/text()').extract()
+        item['comment'] = int(comment)
+        item['like'] = int(like)
 
         yield item

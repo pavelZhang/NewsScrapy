@@ -17,6 +17,9 @@ class SiteUser(scrapy.Item):
     nickname = scrapy.Field()  # 昵称
     url = scrapy.Field()  # url
     gender = scrapy.Field()  # 性别
+    birthday = scrapy.Field()  # 生日
+    occupation = scrapy.Field()  # 职业
+    edubg = scrapy.Field()  # 教育背景
     telephone = scrapy.Field()  # 手机
     address = scrapy.Field()  # 地址
     regtime = scrapy.Field()  # 注册时间

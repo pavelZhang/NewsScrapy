@@ -75,13 +75,16 @@ class PGPipeline(object):
         :param item:
         :return:
         """
-        author = item.pop('author')
         site = item.pop('site')
-        siteuser = _db.SiteUser.objects.filter(nickname=author).first()
-        if not siteuser:
-            site = _db.Site.objects.filter(code=site).first()
-            siteuser = _db.SiteUser.objects.create(
-                nickname=author,
-                site=site
-            )
-        _db.Artical.objects.create(author=siteuser, **dict(item))
+        if 'author' in item:
+            author = item['author']
+            siteuser = _db.SiteUser.objects.filter(nickname=author).first()
+            if not siteuser:
+                site = _db.Site.objects.filter(code=site).first()
+                siteuser = _db.SiteUser.objects.create(
+                    nickname=author,
+                    site=site
+                )
+            item['author'] = siteuser
+
+        _db.Artical.objects.create(**dict(item))
