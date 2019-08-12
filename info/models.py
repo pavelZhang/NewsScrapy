@@ -34,8 +34,8 @@ class AbstractModel(models.Model):
     """
     # objects = models.Manager()
     # objects = BaseManager.from_queryset(BaseQuerySet)()
-    row_status = models.CharField(max_length=64, default='normal')
-    objects = BaseManager()
+    # row_status = models.CharField(max_length=64, default='normal')
+    # objects = BaseManager()
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
