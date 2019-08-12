@@ -217,11 +217,13 @@ LOGGING = {
         },
     },
     'loggers': {
+        """
         'django.db.backends': {
             'handlers': ['backend-file'],
             'propagate': True,
             'level': 'DEBUG',
         },
+        """
         'django.view': {
             'handlers': ['view-file'],
             'level': 'DEBUG',
