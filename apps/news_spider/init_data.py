@@ -24,6 +24,11 @@ def create_site():
             'code': 'guancha',
             'home': 'https://www.guancha.cn/'
         },
+        {
+            'name': '澎湃',
+            'code': 'thepaper',
+            'home': 'https://www.thepaper.cn/'
+        },
     ]
     for site in sites:
         _db.Site.objects.create(**site)

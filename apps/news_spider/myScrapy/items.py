@@ -56,11 +56,12 @@ class Comment(scrapy.Item):
     评论
     """
     author = scrapy.Field()  # 发言用户
+    site = scrapy.Field()  # 站点
     content = scrapy.Field()  # 内容
     timestamp = scrapy.Field()  # 发言时间
     like = scrapy.Field()  # 点赞数
     dislike = scrapy.Field()  # 反对数
 
     # 评论对象
-    fid = scrapy.Field()  # id
+    url = scrapy.Field()  # id
     content_type = scrapy.Field()  # 类型 comment/article

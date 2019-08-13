@@ -45,7 +45,7 @@ class PGPipeline(object):
         item2func = {
             SiteUser: self.create_user,
             Article: self.create_article,
-            Comment: '',
+            Comment: self.create_comment,
         }
         try:
             item2func[type(item)](item)
@@ -54,6 +54,28 @@ class PGPipeline(object):
             spider.r.srem('urls', item['url'])
             print(traceback.format_exc())
         return item
+
+    def create_comment(self, item):
+        """
+        查询用户是否存在，不存在则创建用户
+        :param item:
+        :return:
+        """
+        site = item.pop('site')
+        if 'author' in item:
+            author = item['author']
+            siteuser = _db.SiteUser.objects.filter(nickname=author).first()
+            if not siteuser:
+                site = _db.Site.objects.filter(code=site).first()
+                siteuser = _db.SiteUser.objects.create(
+                    nickname=author,
+                    site=site
+                )
+            item['author'] = siteuser
+
+        url = item.pop('url')
+        fobject = getattr(_db, item['content_type']).objects.filter(url=url).first()
+        _db.Comment.objects.create(fid=fobject.id, **dict(item))
 
     def create_user(self, item):
         """
