@@ -66,6 +66,7 @@ class Artical(AbstractModel):
     like = models.IntegerField(null=True, blank=True, verbose_name='点赞数')
     dislike = models.IntegerField(null=True, blank=True, verbose_name='反对数')
     collect = models.IntegerField(null=True, blank=True, verbose_name='收藏数')
+    read = models.IntegerField(null=True, blank=True, verbose_name='阅读数')
 
     class Meta:
         ordering = ['-timestamp']

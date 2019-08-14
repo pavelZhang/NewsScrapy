@@ -29,6 +29,11 @@ def create_site():
             'code': 'thepaper',
             'home': 'https://www.thepaper.cn/'
         },
+        {
+            'name': 'cnBeta',
+            'code': 'cnbeta',
+            'home': 'https://www.cnbeta.com/'
+        },
     ]
     for site in sites:
         _db.Site.objects.create(**site)

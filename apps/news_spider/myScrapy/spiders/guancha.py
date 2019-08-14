@@ -15,7 +15,7 @@ from scrapy.linkextractors import LinkExtractor
 from myScrapy.items import SiteUser, Article, Comment
 
 
-class MySpider(CrawlSpider):
+class GuanChaSpider(CrawlSpider):
     name = 'guancha'
     allowed_domains = []
     start_urls = ['https://www.guancha.cn/']

@@ -49,6 +49,7 @@ class Article(scrapy.Item):
     like = scrapy.Field()  # 点赞数
     dislike = scrapy.Field()  # 反对数
     collect = scrapy.Field()  # 收藏数
+    read = scrapy.Field()  # 阅读数
 
 
 class Comment(scrapy.Item):
