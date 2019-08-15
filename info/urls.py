@@ -1,6 +1,6 @@
 """info URL Configuration
 
-The `urlpatterns` list routes URLs to views. For more info please see:
+The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.2/topics/http/urls/
 Examples:
 Function views
@@ -13,42 +13,27 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include, re_path
-from rest_framework import routers
+from django.conf.urls import url, include
 
 from info import views
 
-router = routers.SimpleRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
-import rest_framework.urls
-
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Snippets API",
-        default_version='v1',
-        description="Test description",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
-
 urlpatterns = [
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^version$', views.SystemView.as_view(func='version', method='get')),
 
-    path('rest-auth/', include('rest_auth.urls')),
-    path('', include(router.urls)),
-    path('scrapy/', include('core.urls')),
+    url(r'^user/login$', views.UserViewSet.as_view(func='login', method='post')),
+    url(r'^user/logout$', views.UserViewSet.as_view(func='logout', method='post')),
+    url(r'^user/logout$', views.UserViewSet.as_view(func='logout', method='post')),
 
+    url(r'^user/list$', views.UserViewSet.as_view(func='user_list', method='get')),
+    url(r'^user/(?P<pk>\d+)/detail$', views.UserViewSet.as_view(func='user_detail', method='get')),
+    url(r'^user/(?P<pk>\d+)/add$', views.UserViewSet.as_view(func='user_add', method='post')),
+    url(r'^user/(?P<pk>\d+)/update$', views.UserViewSet.as_view(func='user_update', method='post')),
+    url(r'^user/(?P<pk>\d+)/delete$', views.UserViewSet.as_view(func='user_delete', method='post')),
+
+    # 下载
+    url(r'^common/template/download$',
+        views.CommonView.as_view(func='template_download', method='get')),
+
+    url(r'^scrapy/', include('news_spider.urls')),
 ]

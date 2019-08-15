@@ -1,2 +1,1 @@
-celery启动
-    celery -A NewsScrapy worker --pool=solo -l info
+celery启动    celery -A NewsScrapy worker --pool=solo -l infocelery启动本分支代码在django基础上进行一些封装

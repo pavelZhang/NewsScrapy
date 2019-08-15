@@ -3,7 +3,7 @@ WSGI config for info project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
-For more info on this file, see
+For more information on this file, see
 https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 """
 
